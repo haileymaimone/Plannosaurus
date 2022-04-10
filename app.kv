@@ -1,0 +1,1191 @@
+<WindowManager>:
+    id: screen_manager
+
+
+########################
+#### INITIAL SCREEN ####
+########################
+
+    Screen:
+        name: "filler"
+    
+######################
+#### LOGIN SCREEN ####
+######################
+
+		
+    Screen:
+        name: "login_sc"
+        
+        MDCard:
+            size_hint: None, None
+            size: 300,470
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            elevation: 10
+            padding: 25
+            spacing: 25
+            orientation: 'vertical'
+        
+            MDLabel:
+                id: welcome_label
+                text: "Login/Register"
+                font_size: 30
+                halign: 'center'
+                size_hint_y: None
+                height: self.texture_size[1]
+                padding_y: 15
+                
+            MDTextFieldRound:
+                id: user
+                hint_text: 'email'
+                icon_right: 'account'
+                size_hint_x: None
+                width: 200
+                font_size: 18
+                pos_hint: {"center_x": 0.5}
+            
+            MDTextFieldRound:
+                id: password
+                hint_text: 'password'
+                icon_right: 'eye-off'
+                size_hint_x: None
+                width: 200
+                font_size: 18
+                pos_hint: {"center_x": 0.5}
+                password: True
+                
+            MDRoundFlatButton:
+                text: "LOGIN"
+                font_size: 12
+                pos_hint: {"center_x": 0.5}
+                on_press: screen_manager.current = root.init_load(root) if app.login() == 1 else "login_sc"
+				on_release: root.postEvents(root)
+
+            MDRoundFlatButton:
+                text: "CLEAR"
+                font_size: 12
+                pos_hint: {"center_x": 0.5}
+                on_press: app.clear()
+
+            MDRoundFlatButton:
+                text: "REGISTER"
+                font_size: 12
+                pos_hint: {"center_x": 0.5}
+                on_press: screen_manager.current = "reg"
+
+            Widget:
+                size_hint_y: None
+                height: 8 
+
+                 
+################################
+##### OVERVIEW MAIN SCREEN #####
+################################
+
+    Screen:
+        name: "main_sc"
+
+        TabbedPanel:
+            do_default_tab: False
+            tab_pos: 'right_top'
+			background_color: [0, 0, 0, 0]
+			
+			
+##################################
+##### TAB FOR OVERVIEW/TODAY #####
+##################################
+
+            TabbedPanelItem:
+                text: "Overview"
+                #background_color: [66,245,141,0]
+				#text_color_normal: [1,1,1,1]
+                FloatLayout:
+                    id: float
+					#RootWidget:
+					#	rect_color: .5,1,.5,.6
+					#	canvas:
+					#		Color:
+					#			rgba: self.rect_color
+					#		RoundedRectangle:
+					#			pos: 20, 230
+					#			size: root.center_x+320, root.height-320
+							
+					# AsyncImage:
+					# 	source: 'basicwitch-removebg-preview.png'
+					# 	pos_hint: {"x": .71, "y": .45}
+					# 	size_hint: .35, .35
+					# Image:
+					# 	source: 'crystals-removebg-preview.png'
+					# 	pos_hint: {"x": 0, "y": .05}
+					# 	size_hint: .35, .35
+
+					MDTextButton:
+						text: "<<<"
+						font_size: 12
+						pos_hint: {"x": .05, "y": .95}
+						on_press: app.left_cal()
+                
+					MDTextButton:
+						text: ">>>"
+						font_size: 12
+						pos_hint: {"x": .85, "y": .95}
+						on_press: app.right_cal()
+				    MDTextButton:
+						text: "Change Colors"
+						font_size: 12
+						pos_hint: {"x": .05, "y": .85}
+						on_press: screen_manager.current = "changeBoxColors"
+
+
+					MDIconButton:
+						icon: 'calendar'
+						icon_size: "22sp"
+						on_press: app.pick_date()
+						pos_hint: {"x": .55, "y": .83}
+					MDTextButton:
+						text: "Sun"
+						font_size: 16
+						pos_hint: {"x": .15, "y": .95}
+
+					MDTextButton:
+						text: "Mon"
+						font_size: 16
+						pos_hint: {"x": .25, "y": .95}
+
+					MDTextButton:
+						text: "Tue"
+						font_size: 16
+						pos_hint: {"x": .35, "y": .95}
+
+					MDTextButton:
+						text: "Wed"
+						font_size: 16
+						pos_hint: {"x": .45, "y": 0.95}
+
+					MDTextButton:
+						text: "Thu"
+						font_size: 16
+						pos_hint: {"x": .55, "y": 0.95}
+
+					MDTextButton:
+						text: "Fri"
+						font_size: 16
+						pos_hint: {"x": 0.65, "y": 0.95}
+
+					MDTextButton:
+						text: "Sat"
+						font_size: 16
+						pos_hint: {"x": .75, "y": 0.95}
+
+					MDTextButton:
+						id: day1
+						text: ""
+						markup: True
+						font_size: 16
+						pos_hint: {"x": .155, "y": 0.91}
+						on_press: app.current_day(self)
+
+					MDTextButton:
+						id: day2
+						text: ""
+						markup: True
+						font_size: 16
+						pos_hint: {"x": .26, "y": 0.91}
+						on_press: app.current_day(self)
+
+					MDTextButton:
+						id: day3
+						text: ""
+						markup: True
+						font_size: 16
+						pos_hint: {"x": .36, "y": 0.91}
+						on_press: app.current_day(self)
+
+					MDTextButton:
+						id: day4
+						text: ""
+						markup: True
+						font_size: 16
+						pos_hint: {"x": .46, "y": 0.91}
+						on_press: app.current_day(self)
+
+					MDTextButton:
+						id: day5
+						text: ""
+						markup: True
+						font_size: 16
+						pos_hint: {"x": .56, "y": 0.91}
+						on_press: app.current_day(self)
+
+					MDTextButton:
+						id: day6
+						text: ""
+						markup: True
+						font_size: 16
+						pos_hint: {"x": 0.65, "y": 0.91}
+						on_press: app.current_day(self)
+
+					MDTextButton:
+						id: day7
+						text: ""
+						markup: True
+						font_size: 16
+						pos_hint: {"x": .755, "y": 0.91}
+						on_press: app.current_day(self)
+
+
+                    MDLabel:
+                        text: "OVERVIEW"
+						font_size: 30
+                        pos_hint: {"x": .37, "center_y": .87}
+					MDLabel:
+						text: "Events:"
+						font_size: 20
+						pos_hint: {"x": .04, "center_y": .8}
+					MDLabel:
+						text: "To-Do:"
+						font_size: 20
+						pos_hint: {"x": .32, "center_y": .32}
+                    MDTextField:
+						#eventColor: app.pullColor()
+                        id: contentEventMain
+                        multiline: True
+                        on_text: app.contentEvent = self.text
+                        #hint_text: "Events:"
+                        color_mode: 'custom'
+                        helper_text_mode: "on_focus"
+                        mode: "fill"
+						#fill_color: self.eventColor
+                        fill_color: .5,1,.5,0.6
+                        #line_color_focus: .8, 0, 0, 1
+                        line_color_focus: 0, 0, 0, 1
+                        current_hint_text_color: 0, 0, 0, 1
+                        size_hint: (.75, .43)   ### used to be .95, .3
+                        font_size: '15'
+                        pos_hint: {'x': .02, 'y': .40}    ## pos_hint: {'center_x': .5, 'y': .40}    
+                        disabled: True
+                    MDFloatingActionButton:
+						id: addTask
+						pos_hint: {"top":.5, "right":.76}
+						icon: 'pencil'
+						on_release: screen_manager.current = "AddToDo"
+
+					
+					MDTextField:
+                        id: contentTODOMain
+                        multiline: True
+                        #hint_text: "To-Do:"
+                        color_mode: 'custom'
+                        helper_text_mode: "on_focus"
+                        mode: "fill"
+                        fill_color: .5,.5,.8,0.6
+                        #line_color_focus: .8, 0, 0, 1
+                        line_color_focus: 0, 0, 0, 1
+                        current_hint_text_color: 0, 0, 0, 1
+                        size_hint: (.7, .3)   ### used to be .95, .3
+                        font_size: '15'
+                        pos_hint: {'x': .3, 'y': .05}   ## pos_hint: {'center_x': .5, 'y': .05}  
+                        disabled: True
+					MDFloatingActionButton:
+						id: addToDo
+						pos_hint: {"top":.15, "right":1}
+						icon: 'pencil'
+						on_release: app.show_todolist_dialog()
+
+					ScrollView:
+						pos_hint: {'center_y': .21, 'x': .32}
+						size_hint: .6, .25
+						bar_width: 12
+						bar_color: 0, 0, 0, 1
+						bar_inactive_color: .4, .4, .4, 1
+						MDList:
+							id: container
+					ScrollView:
+						pos_hint: {'center_y': .6, 'x': .04}
+						size_hint: .63, .4
+						bar_color: 0, 0, 0, 1
+						bar_inactive_color: .4, .4, .4, 1
+						bar_width: 12
+						MDList:
+							id: eventContainer
+					MDSwiper:
+                        height: 40
+                        id: listSwiper
+
+                        MDSwiperItem:
+                            id: listItem
+					
+					MDTextButton:
+						id: customizeButton
+						text: 'Themes & Buttons'
+						font_size: 12
+						pos_hint: {"x": .85, "y": .85}
+						on_release: app.show_theme_picker()
+						
+						
+##############
+## LIST TAB ##
+##############
+   
+			TabbedPanelItem:
+    			text: "Lists"
+    			id: listtab
+                TabbedPanel:
+                    id: listkv
+                    do_default_tab: False
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    TabbedPanelItem:
+                        id:listpanel
+                        text: "Add New List"
+                        FloatLayout:
+                            MDTextFieldRound:
+                                id:listname
+                                hint_text: "List Name"
+                                pos_hint: {'center_x':.5, 'center_y': .95}
+                                size_hint_x: None
+                                width: 250
+                            MDRoundFlatButton:
+                                id: listadd
+                                text: "Add"
+                                pos_hint: {'center_x':.5, 'center_y':.85}
+                                on_release: app.newlist(listname.text)    
+
+###########################
+### REGISTRATION SCREEN ###  
+###########################       
+            
+    Screen:
+        name: "reg"
+        MDCard:
+            size_hint: None, None
+            size: 300,470
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            elevation: 10
+            padding: 25
+            spacing: 25
+            orientation: 'vertical'
+            
+            MDLabel:
+				id: regLabel
+                text: "REGISTRATION:"
+                pos_hint: {"center_x": 0.6, "center_y": 0.2}
+                font_size: 30
+                bold: True
+
+            MDTextFieldRound:
+                id: firstName
+                hint_text: "First Name"
+                helper_text: ""
+                pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                padding: 25
+                spacing: 25
+                width: 200
+                normal_color: app.theme_cls.accent_color
+                color_active: 1, 0, 1, 1
+                helper_text_mode: "on_focus"
+
+            MDTextFieldRound:
+                id: lastName
+                hint_text: "Last Name"
+                helper_text: ""
+                pos_hint: {"center_y": 0.8}
+                width: 200
+                normal_color: app.theme_cls.accent_color
+                color_active: 1, 0, 1, 1
+                helper_text_mode: "on_focus"
+
+            MDTextFieldRound:
+                id: emailPrompt
+                hint_text: "Email"
+                helper_text: ""
+                pos_hint: {"center_y": 0.7}
+                width: 200
+                icon_left: 'email'
+                normal_color: app.theme_cls.accent_color
+                color_active: 1, 0, 1, 1
+                helper_text_mode: "on_focus"
+
+            MDTextFieldRound:
+                id: enterPass
+                hint_text: "Password:"
+                helper_text: ""
+                pos_hint: {"center_y": 0.6}
+                icon_left: 'key-variant'
+                icon_right: 'eye-off'
+                width: 200
+                normal_color: app.theme_cls.accent_color
+                color_active: 1, 0, 1, 1
+                password: True
+                helper_text_mode: "on_focus"
+
+            MDTextFieldRound:
+                id: passReEnter
+                hint_text: "Re-enter Password:"
+                pos_hint: {"center_y": 0.5}
+                helper_text: "Confirm Password" if passReEnter.text=='' else "Passwords do not match" if passReEnter.text!=enterPass.text else "Passwords Match"
+                helper_text_mode: "on_focus" if passReEnter.text=='' else "on_error" if passReEnter.text!=enterPass.text else "on_focus"  
+                error : False if passReEnter.text=='' else True if passReEnter.text!=enterPass.text else False
+                width: 200
+                icon_left: 'key-variant'
+                icon_right: 'eye-off'
+                normal_color: app.theme_cls.accent_color
+                color_active: 1, 0, 1, 1
+                password: True
+                
+            MDRoundFlatButton:
+                text: "SUBMIT"
+                font_size: 12
+                pos_hint: {"center_x": 0.5}
+                on_press: app.register()
+			
+			MDRoundFlatButton:
+                text: "BACK"
+                font_size: 12
+                pos_hint: {"center_x": 0.5}
+                on_press: screen_manager.current = "login_sc"
+		
+###################################
+#### SCREEN TO ADD TIME EVENTS ####
+###################################
+
+	Screen:
+        name: "AddToDo"
+		MDLabel:
+			text: "Today's Events:"
+			pos_hint: {"center_x": 0.52, "center_y": .97}
+
+		MDTextField:
+			id: contentEvent
+			multiline: True
+			#on_text: self.fill_color = (1, 0, 0, 0.5)
+			#hint_text: "6AM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .84}				
+			mode: "fill"
+			fill_color: 0,.5,.2,.5
+			disabled: False
+		MDLabel:
+			id: 6AMLabel
+			text: '6 AM'
+			pos_hint: {"x": .01, "center_y": .93}
+			font_size: 15
+			
+		MDTextField:
+			id: sevenAM
+			multiline: True
+			#hint_text: "7AM"
+			on_text: app.sevenAM = self.text
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .73}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.35,.5
+			disabled: False
+		MDLabel:
+			id: 7AMLabel
+			text: '7 AM'
+			pos_hint: {"x": .01, "center_y": .82}
+			font_size: 15
+		MDTextField:
+			id: eightAM
+			multiline: True
+			on_text: app.eightAM = self.text
+			#hint_text: "8AM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .62}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.4,.5
+		MDLabel:
+			id: 8AMLabel
+			text: '8 AM'
+			pos_hint: {"x": .01, "center_y": .71}
+			font_size: 15	
+		MDTextField:
+			id: nineAM
+			multiline: True
+			on_text: app.nineAM = self.text
+			#hint_text: "9AM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .51}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.45,.5
+		MDLabel:
+			id: 9AMLabel
+			text: '9 AM'
+			pos_hint: {"x": .01, "center_y": .60}
+			font_size: 15
+		MDTextField:
+			id: tenAM
+			multiline: True
+			on_text: app.tenAM = self.text
+			#hint_text: "10AM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .40}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.5,.5
+		MDLabel:
+			id: 10AMLabel
+			text: '10 AM'
+			pos_hint: {"x": .01, "center_y": .49}
+			font_size: 15
+		MDTextField:
+			id: elevenAM
+			multiline: True
+			on_text: app.elevenAM = self.text
+			#hint_text: "11AM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .29}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.55,.5
+		MDLabel:
+			id: 11AMLabel
+			text: '11 AM'
+			pos_hint: {"x": .01, "center_y": .38}
+			font_size: 15
+		MDTextField:
+			id: noon
+			multiline: True
+			on_text: app.noon = self.text
+			#hint_text: "12PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .18}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.6,.5
+		MDLabel:
+			id: noonLabel
+			text: '12 PM'
+			pos_hint: {"x": .01, "center_y": .27}
+			font_size: 15
+		MDTextField:
+			id: onePM
+			multiline: True
+			on_text: app.onePM = self.text
+			#hint_text: "1PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': 0, 'y': .07}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.65,.5
+		MDLabel:
+			id: 1PMLabel
+			text: '1 PM'
+			pos_hint: {"x": .01, "center_y": .16}
+			font_size: 15
+		MDTextField:
+			id: twoPM
+			multiline: True
+			on_text: app.twoPM = self.text
+			#hint_text: "2PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .84}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.2,.5
+		MDLabel:
+			id: 2PMLabel
+			text: '2 PM'
+			pos_hint: {"x": .51, "center_y": .93}
+			font_size: 15
+		MDTextField:
+			id: threePM
+			multiline: True
+			on_text: app.threePM = self.text
+			#hint_text: "3PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .73}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.35,.5
+		MDLabel:
+			id: 3PMLabel
+			text: '3 PM'
+			pos_hint: {"x": .51, "center_y": .82}
+			font_size: 15
+		MDTextField:
+			id: fourPM
+			multiline: True
+			on_text: app.fourPM = self.text
+			#hint_text: "4PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .62}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.4,.5
+		MDLabel:
+			id: 4PMLabel
+			text: '4 PM'
+			pos_hint: {"x": .51, "center_y": .71}
+			font_size: 15
+		MDTextField:
+			id: fivePM
+			multiline: True
+			on_text: app.fivePM = self.text
+		#	hint_text: "5PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .51}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.45,.5
+		MDLabel:
+			id: 5PMLabel
+			text: '5 PM'
+			pos_hint: {"x": .51, "center_y": .60}
+			font_size: 15
+		MDTextField:
+			id: sixPM
+			multiline: True
+			on_text: app.sixPM = self.text
+			#hint_text: "6PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .40}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.5,.5
+		MDLabel:
+			id: 6PMLabel
+			text: '6 PM'
+			pos_hint: {"x": .51, "center_y": .49}
+			font_size: 15
+		MDTextField:
+			id: sevenPM
+			multiline: True
+			on_text: app.sevenPM = self.text
+			#hint_text: "7PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .29}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.55,.5
+		MDLabel:
+			id: 7PMLabel
+			text: '7 PM'
+			pos_hint: {"x": .51, "center_y": .38}
+			font_size: 15
+		MDTextField:
+			id: eightPM
+			multiline: True
+			on_text: app.eightPM = self.text
+			#hint_text: "8PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .18}				
+		#	helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.6,.5
+		MDLabel:
+			id: 8PMLabel
+			text: '8 PM'
+			pos_hint: {"x": .51, "center_y": .27}
+			font_size: 15
+		MDTextField:
+			id: ninePM
+			multiline: True
+			on_text: app.ninePM = self.text
+			#hint_text: "9PM"
+			color_mode: 'custom'
+			#line_color_focus: .8, 0, 0, 1
+			line_color_focus: 0, 0, 0, 1
+			current_hint_text_color: 0, 0, 0, 1
+			size_hint: (.5, .1)
+			font_size: '15'
+			pos_hint: {'x': .5, 'y': .07}				
+			#helper_text_mode: "on_focus"
+			mode: "fill"
+			fill_color: 0,.5,.65,.5
+		MDLabel:
+			id: 9PMLabel
+			text: '9 PM'
+			pos_hint: {"x": .51, "center_y": .16}
+			font_size: 15
+	#	MDTextField:
+	#		id: contentTodo
+	#		multiline: True
+	#		on_text: app.contentTodo = self.text
+	#		hint_text: "To-Do List"
+	#		color_mode: 'custom'
+	#		#line_color_focus: .8, 0, 0, 1
+	#		line_color_focus: 0, 0, 0, 1
+	#		current_hint_text_color: 0, 0, 0, 1
+	#		size_hint: (.95, .3)
+	#		font_size: '15'
+	#		pos_hint: {'center_x': .5, 'y': 0.08}				
+	#		helper_text_mode: "on_focus"
+	#		mode: "fill"
+	#		fill_color: .5, 1, .8, 0.8
+	
+	
+				
+		MDFloatingActionButton:
+			id: add6AM
+			pos_hint: {"top":.94, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "6 AM")
+				#root.storeText(root, "6 AM", contentEvent)
+	#	MDFloatingActionButton:
+	#		id: delete6AM
+	#		pos_hint: {"top":.94, "right":.45}
+	#		icon: 'trash-can-outline'
+	#		on_release: root.delete_eventFromAdd(root, "6 AM", contentEvent)
+                
+		MDFloatingActionButton:
+			id: add7AM
+			pos_hint: {"top":.83, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "7 AM")
+				#root.postEvents(root)
+				#screen_manager.current="main_sc"
+	#	MDFloatingActionButton:
+	#		id: delete7AM
+	#		pos_hint: {"top":.83, "right":.45}
+	#		icon: 'trash-can-outline'
+	#		on_release: root.delete_eventFromAdd(root, "7 AM", sevenAM)
+		
+		MDFloatingActionButton:
+			id: add8AM
+			pos_hint: {"top":.72, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "8 AM")
+				#screen_manager.current="main_sc"
+		
+		MDFloatingActionButton:
+			id: add9AM
+			pos_hint: {"top":.61, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "9 AM")
+				#screen_manager.current="main_sc"
+				
+		MDFloatingActionButton:
+			id: add10AM
+			pos_hint: {"top":.50, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "10 AM")
+				#screen_manager.current="main_sc"
+				
+		MDFloatingActionButton:
+			id: add11AM
+			pos_hint: {"top":.39, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "11 AM")
+				#screen_manager.current="main_sc"
+
+		MDFloatingActionButton:
+			id: add12PM
+			pos_hint: {"top":.28, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "12 PM")
+				#screen_manager.current="main_sc"
+		
+		MDFloatingActionButton:
+			id: add1PM
+			pos_hint: {"top":.17, "right":.5}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "1 PM")
+				#screen_manager.current="main_sc"
+
+		MDFloatingActionButton:
+			id: add2PM
+			pos_hint: {"top":.94, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "2 PM")
+				#screen_manager.current="main_sc"
+				#app.taskFun_press(contentEvent)
+                
+		MDFloatingActionButton:
+			id: add3PM
+			pos_hint: {"top":.83, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "3 PM")
+				#screen_manager.current="main_sc"
+		
+		MDFloatingActionButton:
+			id: add4PM
+			pos_hint: {"top":.72, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "4 PM")
+				#screen_manager.current="main_sc"
+		
+		MDFloatingActionButton:
+			id: add5PM
+			pos_hint: {"top":.61, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "5 PM")
+				#screen_manager.current="main_sc"
+				
+		MDFloatingActionButton:
+			id: add6PM
+			pos_hint: {"top":.50, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "6 PM")
+				#screen_manager.current="main_sc"
+				
+		MDFloatingActionButton:
+			id: add7PM
+			pos_hint: {"top":.39, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "7 PM")
+				#screen_manager.current="main_sc"
+
+		MDFloatingActionButton:
+			id: add8PM
+			pos_hint: {"top":.28, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "8 PM")
+				#screen_manager.current="main_sc"
+		
+		MDFloatingActionButton:
+			id: add9PM
+			pos_hint: {"top":.17, "right":1}
+			icon: 'check'
+			disabled: False
+			on_release: 
+				root.event_add(root, "9 PM")
+				#screen_manager.current="main_sc"
+		
+	#	MDFloatingActionButton:
+	#		id: adder
+	#		pos_hint: {"top":.55, "right":.97}
+	#		icon: 'calendar-check'
+	#		on_release: 
+				#screen_manager.current="main_sc"
+				#app.taskFun_press(contentTodo)
+      #          root.event_add(root)
+     #           screen_manager.current="main_sc"
+		
+		MDRoundFlatButton:
+            text: "Back"
+            font_size: 12
+            pos_hint: {"center_x": 0.2, "center_y": 0.04}
+            on_press: 
+				root.postEvents(root)
+				screen_manager.current = "main_sc"
+
+		MDRoundFlatButton:
+            text: "Submit"
+            font_size: 12
+            pos_hint: {"center_x": 0.7, "center_y": 0.04}
+            on_press: 
+				root.postEvents(root)
+				screen_manager.current = "main_sc"
+#########################
+## CHANGE COLOR SCREEN ##
+#########################
+
+	Screen:
+		name: "changeBoxColors"
+		
+		FloatLayout:
+			MDRoundFlatButton
+				text: 'Spooky'
+				theme_text_color: "Custom"
+				md_bg_color: .5, 0, 0, .5
+				text_color: 1, 0, 1, .5
+				line_color: 1, 0, 1, .5
+				pos_hint: {'x': .5, 'y': .3}
+				on_press: root.colorChanger(root, "Spooky")
+			MDRoundFlatButton
+				text: 'PINK'
+				theme_text_color: "Custom"
+				md_bg_color: .5, 0, 0, .5
+				text_color: 1, 0, 0, .5
+				line_color: 1, 0, 0, .5
+				pos_hint: {'x': .5, 'y': .5}
+				on_press: root.colorChanger(root, "PINK")
+			MDRoundFlatButton
+				text: 'CITRUS'
+				theme_text_color: "Custom"
+				md_bg_color: 1, 1, 0, .5
+				text_color: 1, 1, 0, 1
+				line_color: 1, 1, 0, 1
+				pos_hint: {'x': .5, 'y': .7}
+				on_press: root.colorChanger(root, "CITRUS")	
+			MDRoundFlatButton
+				text: 'OG'
+				theme_text_color: "Custom"
+				md_bg_color: 0, 1, 0, 1
+				text_color: 0, 1, 0, 1
+				line_color: 0, 1, 0, 1
+				pos_hint: {'x': .5, 'y': .9}
+				on_press: root.colorChanger(root, "OG")
+			MDRoundFlatButton:
+				text: 'BACK'
+				pos_hint: {'x': .5, 'y': .2}
+				on_press: screen_manager.current="main_sc"
+		
+
+###################################
+##### ADD TO TO DO LIST SCREEN#####
+###################################
+
+    Screen:
+        name: "AddToDo2"
+		
+				
+				
+
+<DialogContent>:
+	orientation: "vertical"
+	spacing: "10dp"
+	size_hint: 1, None
+	height: "130dp"
+	
+	GridLayout:
+		rows: 1
+		
+		MDTextField:
+			id: task_text
+			hint_text: "Add To-Do"
+			pos_hint: {"center_y": .4}
+			max_text_length: 50
+			on_text_validate: (app.add_todo(task_text, date_text.text), app.close_dialog())
+			
+	MDLabel:
+		spacing: '10dp'
+		id: date_text
+		
+	BoxLayout:
+		orientation: 'horizontal'
+		
+		MDRaisedButton:
+			text: 'SAVE'
+			on_release: (app.add_todo(task_text, date_text.text), app.postTodo(), app.close_todolist_dialog())
+			
+		
+		MDFlatButton:
+			text: 'CANCEL'
+			on_release: app.close_todolist_dialog()
+			
+<StickerItem>
+	IconLeftWidget:
+		icon: root.icon
+
+<AddStickerDialog>
+	id: sticker_root
+	orientation: "vertical"
+	spacing: "10dp"
+	size_hint: None, None
+	height: "300dp"
+	
+
+	BoxLayout:
+		orientation: 'horizontal'
+
+		MDDropDownItem:
+			id: stickers_list
+			pos_hint: {'x': .15, 'y': .5}
+			text: 'Choose a Sticker'
+			on_release: self.parent.parent.menu.open()
+		MDRaisedButton:
+			text: 'SAVE'
+			pos_hint: {'x': .5, 'y': .15}
+			on_release: (app.save_addSticker(), app.close_addSticker_dialog())
+		MDFlatButton:
+			text: 'CLOSE'
+			pos_hint: {'x': .5, 'y': .15}
+			on_release: app.close_addSticker_dialog()
+
+		MDFloatingActionButton:
+			md_bg_color: 1, 0, 0, 1
+			icon: 'alpha-r-circle-outline'
+			#pos_hint: {'x': .5, 'y': .85}
+			on_release: app.update_stickerColor("RED")
+		MDFloatingActionButton:
+			md_bg_color: 0, 1, 0, 1
+			icon: 'alpha-g-circle-outline'
+			#pos_hint: {'x': .8, 'y': .85}
+			on_release: app.update_stickerColor("GREEN")
+		MDFloatingActionButton:
+			md_bg_color: 1, 1, 0, 1
+			icon: 'alpha-y-circle-outline'
+			#pos_hint: {'x': .5, 'y': .3}
+			on_release: app.update_stickerColor("YELLOW")
+		MDFloatingActionButton:
+			md_bg_color: 1, 0, 1, 1
+			icon: 'alpha-p-circle-outline'
+			#pos_hint: {'x': .8, 'y': .3}
+			on_release: app.update_stickerColor("PURPLE")
+		MDFloatingActionButton:
+			md_bg_color: 0, 0, 1, 1
+			icon: 'alpha-b-circle-outline'
+			#pos_hint: {'x': .7, 'y': .1}
+			on_release: app.update_stickerColor("BLUE")
+
+<CustomizeDialog>
+	orientation: "vertical"
+	spacing: "10dp"
+	size_hint: None, None
+	height: "130dp"
+	
+	FloatLayout:
+		MDRoundFlatButton:
+			text: 'PINK'
+			theme_text_color: "Custom"
+			md_bg_color: .5, 0, 0, .5
+			text_color: 1, 0, 0, .5
+			line_color: 1, 0, 0, .5
+			pos_hint: {'x': .5, 'y': .5}
+			on_press: colorChanger(root)
+			
+	BoxLayout:
+		orientation: 'horizontal'
+		MDFlatButton:
+			text: 'CLOSE'
+			on_release: app.close_customize_dialog()
+			
+
+<EventItemWithCheckbox>:
+    id: the_event_item
+    markup: True
+
+
+    IconLeftWidget:
+		id: eventIcon
+        icon: 'circle-outline'
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+        on_release:
+            app.showAddSticker_dialog(the_event_item)
+			
+
+    IconRightWidget:
+        icon: 'trash-can-outline'
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+        on_release:
+            app.delete_event(root, the_event_item)
+
+	
+
+			
+
+
+<ListItemWithCheckbox>:
+    id: the_list_item
+    markup: True
+	
+
+
+    LeftCheckbox:
+        id: check
+		active: False
+		theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+		color: 0, 0, 0, 1
+        on_release: 
+            root.mark(check, the_list_item)
+
+
+    IconRightWidget:
+        icon: 'trash-can-outline'
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1
+        on_release:
+            root.delete_item(the_list_item)
