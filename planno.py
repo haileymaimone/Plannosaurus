@@ -42,6 +42,7 @@ config.dateID = datetime.today().strftime("%m%d%Y")
 config.store = JsonStore('account.json')
 listindex = 0
 theColor = ""
+trigger = ""
 
 
 class MainApp(MDApp):
@@ -50,7 +51,6 @@ class MainApp(MDApp):
     addStickerDialog = None
     global listindex
 
-
     def build(self):
         Builder.load_file("app.kv")
         self.gen_cal(date.today())
@@ -58,50 +58,22 @@ class MainApp(MDApp):
         return WindowManager()
 
     def on_start(self):
-        Clock.schedule_once(self.set_screen, 6)
+        #Clock.schedule_once(self.set_screen, 5)
+        self.set_screen(0)
 
     def set_screen(self, dt):
 
         if config.store.exists('account'):
             self.root.init_load(self.root)
-           #self.pullColor()
             self.postTodo()
             self.root.postEvents(self.root)
             self.root.current = "main_sc"
         else:
             self.root.current = "login_sc"
-            
-    def pullColor(self):
-        return (1, 0, 0, 1)
-     #   conn = psycopg2.connect(
-      #      host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-       #     database = "d19re7njihace8",
-        #    user = "lveasasuicarlg",
-         #   password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-          #  port = "5432",
-#        )
-#
-        # Create a cursor
- #       c = conn.cursor()
-  #      query = "SELECT style FROM colors WHERE userid = %s"
-   #     c.execute(query, (config.userid,))
-    #    colorOfTextField = c.fetchall()
-        
-     #   conn.commit()
-      #  conn.close()
-        
-     #   if colorOfTextField == "Spooky":
-       #     return (.8,0,.8,0.6)
-      #  elif colorOfTextField == "OG":
-      #      return (.5,1,.5,0.6)
-      #  elif colorOfTextField == "CITRUS":
-        #    return (1, 1, 0, .5)
-     #   elif colorOfTextField == "PINK":
-       #     return (1, 0, .1, .5)
 
-        
-        
-
+    def logout(self):
+        config.store.delete('account')
+        self.root.current = "login_sc"
 
     def gen_cal(self, date):
         curr_day = date
@@ -511,10 +483,15 @@ class MainApp(MDApp):
         
 
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
@@ -621,10 +598,15 @@ class MainApp(MDApp):
     def update_theme(self):
         # todo: modify it to save a theme for each user
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
@@ -667,10 +649,15 @@ class MainApp(MDApp):
         global event_icon
         event_icon.ids.eventIcon.icon = text
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
@@ -745,10 +732,15 @@ class MainApp(MDApp):
     def add_todo(self, task, task_date):
 
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
@@ -777,10 +769,15 @@ class MainApp(MDApp):
         #self.root.ids.contentTODOMain.text = '' # reset textfield to be blank
 
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
@@ -797,7 +794,6 @@ class MainApp(MDApp):
                 if items[3] == 1:
                     self.root.ids['container'].add_widget(ListItemWithCheckbox(text= '[s][b]' + items[4] + '[/b][/s]'))
                     self.root.ids['container'].children[0].ids['check'].active = True
-                    self.root.ids['container'].children[0].ids['check'].text_color = (0, 0, 0, 1)
                 elif items[3] == 0:
                     self.root.ids['container'].add_widget(ListItemWithCheckbox(text= '[b]' + items[4] + '[/b]'))
         
@@ -832,13 +828,65 @@ class CustomizeDialog(MDBoxLayout):
 class AddStickerDialog(MDBoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        md_stickers = ["cat",
+        "christianity",
+        "coffee",
+        "coffin",
+        "crown",
+        "dance-pole",
+        "diamond-stone",
+        "dumbbell",
+        "dog",
+        "doctor",
+        "email-outline",
+        "emoticon-poop",
+        "flower",
+        "food",
+        "foot-print",
+        "ghost-outline",
+        "glass-cocktail",
+        "google-downasaur",
+        "airplane",
+        "baby-carriage",
+        "bat",
+        "beach",
+        "beer-outline",
+        "book-open-variant",
+        "cake-variant",
+        "cannabis",
+        "car",
+        "cards-heart",
+        "alarm",
+        "halloween",
+        "deathly-hallows",
+        "lightning-bolt",
+        "yoga",
+        "whatsapp",
+        "web",
+        "ultra-high-definition",
+        "twitter",
+        "turkey",
+        "triforce",
+        "zodiac-aquarius",
+        "zodiac-aries",
+        "zodiac-cancer",
+        "zodiac-capricorn",
+        "zodiac-gemini",
+        "zodiac-leo",
+        "zodiac-libra",
+        "zodiac-pisces",
+        "zodiac-sagittarius",
+        "zodiac-scorpio",
+        "zodiac-taurus",
+        "zodiac-virgo"]
         sticker_list = [
             {
                 "viewclass": "StickerItem",
                 "icon": f"{i}",
                 "text": f"{i}",
                 "on_release": lambda x = f"{i}": self.set_sticker(x),
-            } for i in md_icons.keys()
+            } for i in md_stickers
         ]
         self.menu = MDDropdownMenu(
             caller = self.ids.stickers_list,
@@ -916,10 +964,15 @@ class ListItemWithCheckbox(OneLineAvatarIconListItem):
         
         if check.active == True:
             conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
             )
             markedItem = the_list_item.text.split('[b]')[1].split('[/b]')[0]
@@ -935,10 +988,15 @@ class ListItemWithCheckbox(OneLineAvatarIconListItem):
         else:
             the_list_item.text = the_list_item.text.split('[s]')[1].split('[/s]')[0]
             conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
             )
             markedItem = the_list_item.text.split('[b]')[1].split('[/b]')[0]
@@ -961,10 +1019,15 @@ class ListItemWithCheckbox(OneLineAvatarIconListItem):
         
 
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
