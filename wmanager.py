@@ -232,10 +232,15 @@ class WindowManager(ScreenManager):
         
 
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
@@ -539,10 +544,15 @@ class WindowManager(ScreenManager):
             self.overview_images(root, img_1, img_2)
 
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
@@ -568,10 +578,15 @@ class WindowManager(ScreenManager):
      #   self.ids.contentEventMain.text = '' # reset textfield to be blank
 
         conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
+            # database = "d19re7njihace8",
+            # user = "lveasasuicarlg",
+            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
+            # port = "5432",
+            host = "localhost",
+            database = "plannodb",
+            user = "postgres",
+            password = "postgres",
             port = "5432",
         )
 
