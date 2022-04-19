@@ -3,14 +3,13 @@ from kivymd.app import MDApp
 from sdates import StartingDates
 from wmanager import WindowManager
 from db import Database
+from plyer import notification
 import config
-import psycopg2
-import psycopg2.extras
-import datetime
+import sqlite3
 from datetime import *
+import time
 from kivy.uix.screenmanager import ScreenManager
-from kivymd.uix.picker import MDDatePicker, MDThemePicker
-from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
+from kivymd.uix.picker import MDDatePicker, MDThemePicker, MDTimePicker
 from kivymd.uix.label import MDLabel
 from kivymd.uix.list import OneLineListItem
 from kivymd.uix.textfield import MDTextFieldRound, MDTextField, MDTextFieldRect
@@ -25,27 +24,31 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import FloatLayout
 from kivy.graphics import Rectangle
 from kivy.graphics import Color
-from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.properties import StringProperty
 from kivymd.icon_definitions import md_icons
 from kivymd.uix.button import MDRoundFlatButton
+import threading
+
 
 
 db = Database()
 icon_text = ""
 event_icon = ""
-content_Event = ""
-eleven_AM = ""
 config.userid = -1
 config.dateID = datetime.today().strftime("%m%d%Y")
 config.store = JsonStore('account.json')
 listindex = 0
 theColor = ""
-trigger = ""
+eventText = ""
+alarm_time = ""
+
+
 
 
 class MainApp(MDApp):
+    questionDialog = None
+    addAlarmDialog = None
     task_list_dialog = None
     customize_dialog = None
     addStickerDialog = None
@@ -58,7 +61,6 @@ class MainApp(MDApp):
         return WindowManager()
 
     def on_start(self):
-        #Clock.schedule_once(self.set_screen, 5)
         self.set_screen(0)
 
     def set_screen(self, dt):
@@ -66,7 +68,8 @@ class MainApp(MDApp):
         if config.store.exists('account'):
             self.root.init_load(self.root)
             self.postTodo()
-            self.root.postEvents(self.root)
+            self.postAlarm()
+            self.postEvents()
             self.root.current = "main_sc"
         else:
             self.root.current = "login_sc"
@@ -157,7 +160,7 @@ class MainApp(MDApp):
         config.dateID = value.strftime("%m%d%Y")
         self.gen_cal(value)
         self.postTodo()
-        self.root.postEvents(self.root)
+        self.postEvents()
 
         
         if self.theDays.day1 == value:
@@ -361,7 +364,7 @@ class MainApp(MDApp):
 
         dayHold.text = "[color=#42f58d]" + dayHold.text + "[/color]" # change text color of same day of the week when shifted
         self.postTodo()
-        self.root.postEvents(self.root)
+        self.postEvents()
 
     def right_cal(self):
         self.theDays.day1 = (self.theDays.day1 + timedelta(days = 7))
@@ -429,7 +432,7 @@ class MainApp(MDApp):
 
         dayHold.text = "[color=#42f58d]" + dayHold.text + "[/color]" # change text color of same day of the week when shifted
         self.postTodo()
-        self.root.postEvents(self.root)
+        self.postEvents()
                 
     def current_day(self, instance):
         newDate = ''
@@ -469,11 +472,9 @@ class MainApp(MDApp):
         
         instance.text = "[color=#42f58d]" + instance.text + "[/color]"
         self.postTodo()
-        self.root.postEvents(self.root)
+        self.postEvents()
 
-    def delete_event(self, root, the_event_item):
-        global content_Event
-        global eleven_AM
+    def delete_event(self, the_event_item):
         deleteItem = ''
         
         if the_event_item.text[0:3] == '[b]':
@@ -482,27 +483,16 @@ class MainApp(MDApp):
             deleteItem = the_event_item.text.split('[s][b]')[1].split('[/b][/s]')[0]
         
 
-        conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-        )
+        conn = sqlite3.connect('plannodb.db')
 
         # Create a cursor
         c = conn.cursor()
-        query = "SELECT time FROM events WHERE userid = %s AND messageBody = %s"
+        query = "SELECT time FROM events WHERE userid = ? AND messageBody = ?"
         c.execute(query, (config.userid, deleteItem,))
         timeofEvent = c.fetchall()
 
         
-        query = "DELETE FROM events WHERE userid = %s AND messageBody = %s"
+        query = "DELETE FROM events WHERE userid = ? AND messageBody = ?"
         c.execute(query, (config.userid, deleteItem,))
         
         conn.commit()
@@ -575,11 +565,21 @@ class MainApp(MDApp):
         
         self.root.ids.eventContainer.remove_widget(the_event_item)
         
-        
-    def changeIt(self, rect_color):
-        self.rect_color=1,0,0,1
-        return
+    def deleteAlarm(self, alarmItem):
+        deleteItem = ''
 
+        deleteItem = alarmItem.secondary_text
+
+        conn = sqlite3.connect('plannodb.db')
+
+        # Create a cursor
+        c = conn.cursor()
+        query = "DELETE FROM alarms WHERE userid = ? AND alarmtext = ?"
+        c.execute(query, (config.userid, deleteItem,))
+        
+        conn.commit()
+        conn.close()
+        self.root.ids.alarmContainer.remove_widget(alarmItem)
         
     def show_customize_dialog(self):
         if not self.customize_dialog:
@@ -596,19 +596,7 @@ class MainApp(MDApp):
         theme_dialog.open()
 
     def update_theme(self):
-        # todo: modify it to save a theme for each user
-        conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-        )
+        conn = sqlite3.connect('plannodb.db')
 
         # Create a cursor
         c = conn.cursor()
@@ -617,10 +605,10 @@ class MainApp(MDApp):
         curr_theme = c.fetchall()
 
         if len(curr_theme) == 0:
-            c.execute("INSERT INTO theme (primary_palette, accent_palette, theme_style) VALUES (%s, %s, %s)",
+            c.execute("INSERT INTO theme (primary_palette, accent_palette, theme_style) VALUES (?, ?, ?)",
             (self.theme_cls.primary_palette, self.theme_cls.accent_palette, self.theme_cls.theme_style))
         else:
-            c.execute("UPDATE theme SET primary_palette = %s, accent_palette = %s, theme_style = %s", 
+            c.execute("UPDATE theme SET primary_palette = ?, accent_palette = ?, theme_style = ?", 
             (self.theme_cls.primary_palette, self.theme_cls.accent_palette, self.theme_cls.theme_style))
 
         conn.commit()
@@ -648,25 +636,9 @@ class MainApp(MDApp):
     def update_sticker(self, text):
         global event_icon
         event_icon.ids.eventIcon.icon = text
-        conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-        )
+        event_text = event_icon.text.split('[b]')[1].split('[/b]')[0]
 
-        # Create a cursor
-        c = conn.cursor()
-        query = "UPDATE events SET sticker = %s"
-        c.execute(query, (text,))
-        conn.commit()
-        conn.close()
+        db.update_sticker(text, event_text)
 
     
     def update_stickerColor(self, color):
@@ -692,20 +664,9 @@ class MainApp(MDApp):
 
     def save_stickerColor(self, color):
          # 0, 0, 0, 1 is default
-        conn = psycopg2.connect(
-            host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            database = "d19re7njihace8",
-            user = "lveasasuicarlg",
-            password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            port = "5432",
-        )
+        event_text = event_icon.text.split('[b]')[1].split('[/b]')[0]
 
-        # Create a cursor
-        c = conn.cursor()
-        query = "UPDATE events SET color = %s"
-        c.execute(query, (color,))
-        conn.commit()
-        conn.close()
+        db.save_stickerColor(color, event_text)
     
     def show_todolist_dialog(self):
         if not self.task_list_dialog:
@@ -731,18 +692,7 @@ class MainApp(MDApp):
     
     def add_todo(self, task, task_date):
 
-        conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-        )
+        conn = sqlite3.connect('plannodb.db')
 
         # Create a cursor
         c = conn.cursor()
@@ -752,7 +702,7 @@ class MainApp(MDApp):
             
         todoMessage = task.text
         
-        c.execute("INSERT INTO todos(dateID, timestamp, completed, todoItem, userID) VALUES (%s, %s, %s, %s, %s)", (config.dateID, task_date, 0, todoMessage, config.userid))
+        c.execute("INSERT INTO todos(dateID, timestamp, completed, todoItem, userID) VALUES (?, ?, ?, ?, ?)", (config.dateID, task_date, 0, todoMessage, config.userid))
         self.root.ids['container'].add_widget(ListItemWithCheckbox(text='[b]'+task.text+'[/b]', secondary_text='[size=12]'+'have done by: '+ task_date+'[/size]'))
         task.text=''
         
@@ -766,23 +716,11 @@ class MainApp(MDApp):
         if config.store.exists('account'):
             config.userid = config.store.get('account')['userid']
 
-        #self.root.ids.contentTODOMain.text = '' # reset textfield to be blank
+        conn = sqlite3.connect('plannodb.db')
 
-        conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-        )
-
-        c = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        query = "SELECT * FROM todos WHERE userID = %s AND dateID = %s"
+        #c = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        c = conn.cursor()
+        query = "SELECT * FROM todos WHERE userID = ? AND dateID = ?"
         c.execute(query, (config.userid, config.dateID,))
         records = c.fetchall()
         
@@ -817,13 +755,241 @@ class MainApp(MDApp):
         
         conn.commit()
         conn.close()
-        #task.text = ''
+
+    def event_add(self, time):
+        timesArr = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM"]
+        militaryArr = ["06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"]
+        index = timesArr.index(time)
+        timeObj = datetime.strptime(militaryArr[index], '%H:%M').strftime("%H:%M")
+
+        if index == 0:
+            messageText = self.root.ids.contentEvent.text
+            self.root.ids.contentEvent.disabled = True
+            self.root.ids.add6AM.disabled = True
+        elif index == 1:
+            messageText = self.root.ids.sevenAM.text
+            self.root.ids.sevenAM.disabled = True
+            self.root.ids.add7AM.disabled = True
+        elif index == 2:
+            messageText = self.root.ids.eightAM.text
+            self.root.ids.eightAM.disabled = True
+            self.root.ids.add8AM.disabled = True
+        elif index == 3:
+            messageText = self.root.ids.nineAM.text
+            self.root.ids.nineAM.disabled = True
+            self.root.ids.add9AM.disabled = True
+        elif index == 4:
+            messageText = self.root.ids.tenAM.text
+            self.root.ids.tenAM.disabled = True
+            self.root.ids.add10AM.disabled = True
+        elif index == 5:
+            messageText = self.root.ids.elevenAM.text
+            self.root.ids.elevenAM.disabled = True
+            self.root.ids.add11AM.disabled = True
+        elif index == 6:
+            messageText = self.root.ids.noon.text
+            self.root.ids.noon.disabled = True
+            self.root.ids.add12PM.disabled = True
+        elif index == 7:
+            messageText = self.root.ids.onePM.text
+            self.root.ids.onePM.disabled = True
+            self.root.ids.add1PM.disabled = True
+        elif index == 8:
+            messageText = self.root.ids.twoPM.text
+            self.root.ids.twoPM.disabled = True
+            self.root.ids.add2PM.disabled = True
+        elif index == 9:
+            messageText = self.root.ids.threePM.text
+            self.root.ids.threePM.disabled = True
+            self.ids.add3PM.disabled = True
+        elif index == 10:
+            messageText = self.root.ids.fourPM.text
+            self.root.ids.fourPM.disabled = True
+            self.root.ids.add4PM.disabled = True
+        elif index == 11:
+            messageText = self.root.ids.fivePM.text
+            self.root.ids.fivePM.disabled = True
+            self.root.ids.add5PM.disabled = True
+        elif index == 12:
+            messageText = self.root.ids.sixPM.text
+            self.root.ids.sixPM.disabled = True
+            self.root.ids.add6PM.disabled = True
+        elif index == 13:
+            messageText = self.root.ids.sevenPM.text
+            self.root.ids.sevenPM.disabled = True
+            self.root.ids.add7PM.disabled = True
+        elif index == 14:
+            messageText = self.root.ids.eightPM.text
+            self.root.ids.eightPM.disabled = True
+            self.root.ids.add8PM.disabled = True
+        elif index == 15:
+            messageText = self.root.ids.ninePM.text
+            self.root.ids.ninePM.disabled = True
+            self.root.ids.add9PM.disabled = True
+        
+
+        conn = sqlite3.connect('plannodb.db')
+
+        # Create a cursor
+        c = conn.cursor()
+
+        if config.store.exists('account'):
+            config.userid = config.store.get('account')['userid']
+        
+        c.execute("INSERT INTO events(dateID, timestamp, time, messageBody, userID, sticker, color) VALUES (?, ?, ?, ?, ?, ?, ?)", (config.dateID, timeObj, time, time + " - " + messageText, config.userid, 'circle-outline', 'default'))
+        conn.commit()
+        conn.close()
+
+    def postEvents(self):
+
+        if config.store.exists('account'):
+            config.userid = config.store.get('account')['userid']
 
 
+        conn = sqlite3.connect('plannodb.db')
+
+        c = conn.cursor()
+        query = "SELECT * FROM events WHERE userID = ? AND dateID = ?"
+        c.execute(query, (config.userid, config.dateID,))
+        records = c.fetchall()
+        records.sort(key = lambda date: datetime.strptime(date[2], "%H:%M"))
+
+        # RED 1, 0, 0, 1
+        # GREEN 0, 1, 0, 1
+        # YELLOW 1, 1, 0, 1
+        # BLUE 0, 0, 1, 1
+        # PURPLE 1, 0, 1, 1
+        # DEFAULT 0, 0, 0, 1
+        self.root.ids['eventContainer'].clear_widgets()
+        if records:
+            for items in records:
+                self.root.ids['eventContainer'].add_widget(EventItemWithCheckbox(text= '[b]' + items[4] + '[/b]'))
+                self.root.ids['eventContainer'].children[0].ids['eventIcon'].icon = items[6]
+
+                if items[7] == "RED":
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].text_color = 1, 0, 0, 1
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].set_text_color([1, 0, 0, 1])
+                elif items[7] == "GREEN":
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].text_color = 0, 1, 0, 1
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].set_text_color([0, 1, 0, 1])
+                elif items[7] == "YELLOW":
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].text_color = 1, 1, 0, 1
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].set_text_color([1, 1, 0, 1])
+                elif items[7] == "BLUE":
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].text_color = 0, 0, 1, 1
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].set_text_color([0, 0, 1, 1])
+                elif items[7] == "PURPLE":
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].text_color = 1, 0, 1, 1
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].set_text_color([1, 0, 1, 1])
+                else:
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].text_color = 0, 0, 0, 1
+                    self.root.ids['eventContainer'].children[0].ids['eventIcon'].set_text_color([0, 0, 0, 1])
+
+        
+        # easiest way to do things on pageload
+
+        # load colors data
+        query = "SELECT * FROM colors WHERE userID = ?"
+        c.execute(query, (config.userid,))
+        records = c.fetchall()
+        
+        if records:
+            self.root.colorChanger(self, records[0][0])
+        else:
+            self.root.colorChanger(self, "OG")
+
+        conn.commit()
+        conn.close()
+        
+    def show_addalarm_dialog(self):
+        addAlarmDialog = MDTimePicker()
+        addAlarmDialog.bind(time=self.get_time, on_save=self.schedule)
+        addAlarmDialog.open()
+
+    def postAlarm(self):
+        # pull from database and add alarm items to container
+        if config.store.exists('account'):
+            config.userid = config.store.get('account')['userid']
+
+        conn = sqlite3.connect('plannodb.db')
+        
+        c = conn.cursor()
+        query = "SELECT * FROM alarms WHERE userID = ? AND dateID = ?"
+        c.execute(query, (config.userid, config.dateID,))
+        records = c.fetchall()
+
+        self.root.ids['alarmContainer'].clear_widgets()
+        
+        if records:
+            for items in records:
+                self.root.ids['alarmContainer'].add_widget(AlarmList(text= 'Date: ' + items[1] + ' - Alarm Time: ' + items[2] , secondary_text= items[3]))
+        
+        conn.commit()
+        conn.close()
+    
+    
+    def schedule(self, *args):
+        # add alarm items to database
+        conn = sqlite3.connect('plannodb.db')
+            
+
+        # Create a cursor
+        c = conn.cursor()
+
+        if config.store.exists('account'):
+            config.userid = config.store.get('account')['userid']
+        
+        c.execute("INSERT INTO alarms(dateID, alarmtime, alarmtext, userID) VALUES (?, ?, ?, ?)", (config.dateID, alarm_time, eventText, config.userid))
+        conn.commit()
+        conn.close()
+        
+        # pull from database and add alarm items to container 
+        
+        self.postAlarm()
+        
+        notify = BackgroundThread()
+
+
+    
+    def get_time(self, instance, time):
+        global alarm_time
+        print(time)
+        alarm_time = str(time)
+    
+
+    
+    def close_alarm_dialog(self):
+        self.addAlarmDialog.dismiss()
+    
+    def show_question_dialog(self, alarmEvent):
+        global eventText
+        eventText = alarmEvent.text.split('[b]')[1].split('[/b]')[0]
+        if not self.questionDialog:
+            self.questionDialog=MDDialog(
+                title="Add Alarm?",
+                type="custom",
+                content_cls=QuestionDialog(),
+            )
+
+        self.questionDialog.open()
+        
+    def closeAskDialog(self):
+        self.questionDialog.dismiss()
+
+# to ask if user wants to add alarm to the list item
+class QuestionDialog(MDBoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+# dialog to open time picker and set alarm
+class AddAlarmDialogContent(MDBoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        
+        
 class CustomizeDialog(MDBoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-       # self.ids.date_text.text = str(datetime.now().strftime('%A %d %B %Y'))
 
 class AddStickerDialog(MDBoxLayout):
     def __init__(self, **kwargs):
@@ -946,10 +1112,10 @@ class EventItemWithCheckbox(OneLineAvatarIconListItem):
             the_event_item.text = the_event_item.text.split('[s]')[1].split('[/s]')[0]
 
 
-        
-        
-    
-    
+class AlarmList(TwoLineAvatarIconListItem):
+    def __init__(self, pk=None, **kwargs):
+        super().__init__(**kwargs)
+        self.pk = pk
         
 # below class for Todos
 class ListItemWithCheckbox(OneLineAvatarIconListItem):
@@ -963,23 +1129,13 @@ class ListItemWithCheckbox(OneLineAvatarIconListItem):
     def mark(self, check, the_list_item):
         
         if check.active == True:
-            conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-            )
+            conn = sqlite3.connect('plannodb.db')
+
             markedItem = the_list_item.text.split('[b]')[1].split('[/b]')[0]
             
             # Create a cursor
             c = conn.cursor()
-            query = "UPDATE todos SET completed = 1 WHERE userid = %s AND todoItem = %s"
+            query = "UPDATE todos SET completed = 1 WHERE userid = ? AND todoItem = ?"
             c.execute(query, (config.userid, markedItem,))
 
             conn.commit()
@@ -987,23 +1143,13 @@ class ListItemWithCheckbox(OneLineAvatarIconListItem):
             the_list_item.text = '[s][b]'+the_list_item.text+'[/b][/s]'
         else:
             the_list_item.text = the_list_item.text.split('[s]')[1].split('[/s]')[0]
-            conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-            )
+            conn = sqlite3.connect('plannodb.db')
+
             markedItem = the_list_item.text.split('[b]')[1].split('[/b]')[0]
             
             # Create a cursor
             c = conn.cursor()
-            query = "UPDATE todos SET completed = 0 WHERE userid = %s AND todoItem = %s"
+            query = "UPDATE todos SET completed = 0 WHERE userid = ? AND todoItem = ?"
             c.execute(query, (config.userid, markedItem,))
         
             conn.commit()
@@ -1018,22 +1164,11 @@ class ListItemWithCheckbox(OneLineAvatarIconListItem):
             deleteItem = the_list_item.text.split('[s][b]')[1].split('[/b][/s]')[0]
         
 
-        conn = psycopg2.connect(
-            # host = "ec2-34-205-209-14.compute-1.amazonaws.com",
-            # database = "d19re7njihace8",
-            # user = "lveasasuicarlg",
-            # password = "c372ee6ba2bc15c476bf85a8258fa444d2a51f4323b6903a1963c0c5fb118a08",
-            # port = "5432",
-            host = "localhost",
-            database = "plannodb",
-            user = "postgres",
-            password = "postgres",
-            port = "5432",
-        )
+        conn = sqlite3.connect('plannodb.db')
 
         # Create a cursor
         c = conn.cursor()
-        query = "DELETE FROM todos WHERE userid = %s AND todoItem = %s"
+        query = "DELETE FROM todos WHERE userid = ? AND todoItem = ?"
         c.execute(query, (config.userid, deleteItem,))
         
         conn.commit()
@@ -1046,4 +1181,45 @@ class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
 class StickerItem(OneLineAvatarIconListItem):
     icon = StringProperty()
 
+class BackgroundThread(object):
+    def __init__ (self, interval = 1):
+        self.interval = interval
+
+        thread = threading.Thread(target = self.run)
+        thread.daemon = True
+        thread.start()
+
+    def run(self, *args):
+        global alarm_time
+        global eventText
+
+        while True:
+            current_time=datetime.now().strftime("%H:%M:%S")
+
+            if alarm_time==current_time:
+                notification.notify(
+                    title = 'Upcoming Event',
+                    message = eventText,
+                    app_icon = None,
+                    timeout = 10,
+                )
+
+                if config.store.exists('account'):
+                    config.userid = config.store.get('account')['userid']
+
+                conn = sqlite3.connect('plannodb.db')
+        
+                c = conn.cursor()
+                query = "DELETE FROM alarms WHERE userID = ? AND dateID = ? AND alarmtext = ?"
+                c.execute(query, (config.userid, config.dateID, eventText,))
+                conn.commit()
+                conn.close()
+
+                break
+            time.sleep(self.interval)
+
 MainApp().run()
+
+# sever database connection once app is exited
+
+db.close_db()
