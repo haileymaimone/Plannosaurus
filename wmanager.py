@@ -199,6 +199,10 @@ class WindowManager(ScreenManager):
         
             self.ids.addToDo.md_bg_color = [0, 1, 0, .5]
             self.ids.addTask.md_bg_color = [0, 1, 0, .5]
+            self.ids.alarmList.md_bg_color = [.5,.5,.8,0.6]
+            self.ids.logoutButton.md_bg_color = [.5,.5,.8,0.6]
+            self.ids.customizeButton.md_bg_color = [.5,.5,.8,0.6]
+            self.ids.changeColorsButton.md_bg_color = [.5,.5,.8,0.6]
             
             #Change colors of add event screen (left side)
             self.ids.contentEvent.fill_color = (0,.5,.2,.5)
@@ -264,6 +268,10 @@ class WindowManager(ScreenManager):
         
             self.ids.addToDo.md_bg_color = [1, .5, 0, .8]
             self.ids.addTask.md_bg_color = [1, .5, 0, .8]
+            self.ids.alarmList.md_bg_color = [1, .5, 0, .8]
+            self.ids.logoutButton.md_bg_color = [1, .5, 0, .8]
+            self.ids.customizeButton.md_bg_color = [1, .5, 0, .8]
+            self.ids.changeColorsButton.md_bg_color = [1, .5, 0, .8]
             
             #Change colors of add event screen (left side)
             self.ids.contentEvent.fill_color = [1, .3, 0, .5]
@@ -327,6 +335,10 @@ class WindowManager(ScreenManager):
         
             self.ids.addToDo.md_bg_color = [1, 0, 0, .8]
             self.ids.addTask.md_bg_color = [1, 0, 0, .8]
+            self.ids.alarmList.md_bg_color = [.8, 0, .5, .5]
+            self.ids.logoutButton.md_bg_color = [.8, 0, .5, .5]
+            self.ids.customizeButton.md_bg_color = [.8, 0, .5, .5]
+            self.ids.changeColorsButton.md_bg_color = [.8, 0, .5, .5]
             
             #Change colors of add event screen (left side)
             self.ids.contentEvent.fill_color = [.8, 0, .5, .5]
@@ -390,6 +402,10 @@ class WindowManager(ScreenManager):
         
             self.ids.addToDo.md_bg_color = [1, 0, 1, .5]
             self.ids.addTask.md_bg_color = [1, 0, 1, .5]
+            self.ids.alarmList.md_bg_color = [1, 0, 1, .5]
+            self.ids.logoutButton.md_bg_color = [1, 0, 1, .5]
+            self.ids.customizeButton.md_bg_color = [1, 0, 1, .5]
+            self.ids.changeColorsButton.md_bg_color = [1, 0, 1, .5]
             
             # Changes colors of Add Event Screen
             self.ids.contentEvent.fill_color = [.8,.7,.8,0.6]
