@@ -801,7 +801,7 @@ class MainApp(MDApp):
         elif index == 9:
             messageText = self.root.ids.threePM.text
             self.root.ids.threePM.disabled = True
-            self.ids.add3PM.disabled = True
+            self.root.ids.add3PM.disabled = True
         elif index == 10:
             messageText = self.root.ids.fourPM.text
             self.root.ids.fourPM.disabled = True
